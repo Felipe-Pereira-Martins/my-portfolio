@@ -709,7 +709,7 @@ footer p, footer a {
     color: white;
     transform: translateY(-2px);
 }
-
+ 
 .social-icons .bi-whatsapp:hover {
     color: #25D366;
 }
@@ -734,17 +734,19 @@ footer p, footer a {
     color: #0A66C2;
 }
 
+/* No final do arquivo css/styles.css */
+
 .page {
     display: none;
     opacity: 0;
-    transform: translateY(20px);
-    transition: all 0.5s ease;
+    /* Removemos o transform: translateY(20px) que causava o efeito de puxar */
+    transition: opacity 0.4s ease-in-out; 
 }
 
 .page.active {
     display: block;
     opacity: 1;
-    transform: translateY(0);
+    /* Removemos o transform: translateY(0) */
 }
 
 @keyframes fadeInUp {

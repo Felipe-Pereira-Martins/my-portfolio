@@ -1,74 +1,173 @@
-function showPage(pageName) {
+/**
+ * Alterna as páginas com efeito Fade suave (sem movimento de pixels)
+ * @param {string} pageName - ID da seção a exibir
+ * @param {Event} event - Evento de clique para prevenir reload
+ */
+function showPage(pageName, event) {
+    // 1. Evita recarregar a página (comportamento padrão do link)
+    if (event) {
+        event.preventDefault();
+    }
+
     const pages = document.querySelectorAll('.page');
     const currentActive = document.querySelector('.page.active');
-    
-    // Smooth transition between pages
+    const targetPage = document.getElementById(pageName);
+
+    // Se clicou na página que já está aberta, não faz nada
+    if (currentActive && currentActive.id === pageName) {
+        return; 
+    }
+
+    // Lógica de transição
     if (currentActive) {
-        currentActive.style.opacity = '0';
-        currentActive.style.transform = 'translateY(20px)';
-        
+        // Remove a classe active para iniciar o fade-out via CSS
+        currentActive.classList.remove('active');
+
+        // Aguarda o tempo da transição do CSS (400ms)
         setTimeout(() => {
-            pages.forEach(page => {
-                page.classList.remove('active');
-            });
+            currentActive.style.display = 'none';
             
-            document.getElementById(pageName).classList.add('active');
-            
-            // Trigger reflow for animation
-            document.getElementById(pageName).offsetHeight;
-            
-            document.getElementById(pageName).style.opacity = '1';
-            document.getElementById(pageName).style.transform = 'translateY(0)';
-            
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            
-            // Close mobile menu if open
-            const navbarCollapse = document.querySelector('.navbar-collapse');
-            if (navbarCollapse.classList.contains('show')) {
-                const bsCollapse = new bootstrap.Collapse(navbarCollapse);
-                bsCollapse.hide();
+            // Mostra a nova página
+            if (targetPage) {
+                targetPage.style.display = 'block';
+                
+                // Pequeno delay para o navegador processar o display:block
+                // antes de aplicar a opacidade
+                setTimeout(() => {
+                    targetPage.classList.add('active');
+                }, 10);
             }
-        }, 200);
+            
+            // Rola suavemente para o topo
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        }, 400); // Sincronizado com transition do CSS
+    } else {
+        // Caso inicial (primeiro carregamento)
+        if (targetPage) {
+            targetPage.style.display = 'block';
+            setTimeout(() => {
+                targetPage.classList.add('active');
+            }, 10);
+        }
+    }
+
+    // Fecha o menu mobile se estiver aberto (Bootstrap)
+    const navbarCollapse = document.querySelector('.navbar-collapse');
+    if (navbarCollapse && navbarCollapse.classList.contains('show')) {
+        if (typeof bootstrap !== 'undefined') {
+            const bsCollapse = new bootstrap.Collapse(navbarCollapse, {toggle: false});
+            bsCollapse.hide();
+        } else {
+            // Fallback se o Bootstrap JS não carregou
+            navbarCollapse.classList.remove('show');
+        }
     }
 }
 
-// Initialize page
+// Inicialização do Site
 document.addEventListener('DOMContentLoaded', function() {
-    showPage('home');
-    
-    // Add smooth closing for mobile menu
-    const navLinks = document.querySelectorAll('.nav-link');
-    const navbarCollapse = document.querySelector('.navbar-collapse');
-    
-    navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            if (window.innerWidth <= 991) {
-                setTimeout(() => {
-                    const bsCollapse = bootstrap.Collapse.getInstance(navbarCollapse);
-                    if (bsCollapse) {
-                        bsCollapse.hide();
-                    }
-                }, 300);
-            }
-        });
-    });
-    
-    // Add hover effect to navbar brand
-    const navbarBrand = document.querySelector('.navbar-brand');
-    navbarBrand.style.transition = 'all 0.3s ease';
-    
-    navbarBrand.addEventListener('mouseenter', function() {
-        this.style.transform = 'scale(1.05)';
-    });
-    
-    navbarBrand.addEventListener('mouseleave', function() {
-        this.style.transform = 'scale(1)';
-    });
-});
-// Update copyright year automatically
-document.addEventListener('DOMContentLoaded', function() {
+    // Atualiza o ano no rodapé
     const yearElement = document.getElementById('current-year');
     if (yearElement) {
         yearElement.textContent = new Date().getFullYear();
+    }
+
+    // Garante que a Home abre se nenhuma página estiver ativa
+    if (!document.querySelector('.page.active')) {
+        showPage('home');
+    }
+    
+    // Efeito na marca da Navbar
+    const navbarBrand = document.querySelector('.navbar-brand');
+    if (navbarBrand) {
+        navbarBrand.addEventListener('mouseenter', function() { this.style.transform = 'scale(1.05)'; });
+        navbarBrand.addEventListener('mouseleave', function() { this.style.transform = 'scale(1)'; });
+    }
+});/**
+ * Alterna as páginas com efeito Fade suave (sem movimento de pixels)
+ * @param {string} pageName - ID da seção a exibir
+ * @param {Event} event - Evento de clique para prevenir reload
+ */
+function showPage(pageName, event) {
+    // 1. Evita recarregar a página (comportamento padrão do link)
+    if (event) {
+        event.preventDefault();
+    }
+
+    const pages = document.querySelectorAll('.page');
+    const currentActive = document.querySelector('.page.active');
+    const targetPage = document.getElementById(pageName);
+
+    // Se clicou na página que já está aberta, não faz nada
+    if (currentActive && currentActive.id === pageName) {
+        return; 
+    }
+
+    // Lógica de transição
+    if (currentActive) {
+        // Remove a classe active para iniciar o fade-out via CSS
+        currentActive.classList.remove('active');
+
+        // Aguarda o tempo da transição do CSS (400ms)
+        setTimeout(() => {
+            currentActive.style.display = 'none';
+            
+            // Mostra a nova página
+            if (targetPage) {
+                targetPage.style.display = 'block';
+                
+                // Pequeno delay para o navegador processar o display:block
+                // antes de aplicar a opacidade
+                setTimeout(() => {
+                    targetPage.classList.add('active');
+                }, 10);
+            }
+            
+            // Rola suavemente para o topo
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        }, 400); // Sincronizado com transition do CSS
+    } else {
+        // Caso inicial (primeiro carregamento)
+        if (targetPage) {
+            targetPage.style.display = 'block';
+            setTimeout(() => {
+                targetPage.classList.add('active');
+            }, 10);
+        }
+    }
+
+    // Fecha o menu mobile se estiver aberto (Bootstrap)
+    const navbarCollapse = document.querySelector('.navbar-collapse');
+    if (navbarCollapse && navbarCollapse.classList.contains('show')) {
+        if (typeof bootstrap !== 'undefined') {
+            const bsCollapse = new bootstrap.Collapse(navbarCollapse, {toggle: false});
+            bsCollapse.hide();
+        } else {
+            // Fallback se o Bootstrap JS não carregou
+            navbarCollapse.classList.remove('show');
+        }
+    }
+}
+
+// Inicialização do Site
+document.addEventListener('DOMContentLoaded', function() {
+    // Atualiza o ano no rodapé
+    const yearElement = document.getElementById('current-year');
+    if (yearElement) {
+        yearElement.textContent = new Date().getFullYear();
+    }
+
+    // Garante que a Home abre se nenhuma página estiver ativa
+    if (!document.querySelector('.page.active')) {
+        showPage('home');
+    }
+    
+    // Efeito na marca da Navbar
+    const navbarBrand = document.querySelector('.navbar-brand');
+    if (navbarBrand) {
+        navbarBrand.addEventListener('mouseenter', function() { this.style.transform = 'scale(1.05)'; });
+        navbarBrand.addEventListener('mouseleave', function() { this.style.transform = 'scale(1)'; });
     }
 });
